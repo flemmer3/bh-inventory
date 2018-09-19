@@ -1,1 +1,1 @@
-# bh-task-submission-api
+# bh-inventory

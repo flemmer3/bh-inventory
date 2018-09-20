@@ -5,16 +5,40 @@ var SPREADSHEET_ID = "1FFNOBq7LXesjj_hnnQAp6JtmnX6NIVpZcU1kkQ13AzA";
 
 function doGet(e)
 {
-    if(!isAuthorized(e))
-    {
-        return buildErrorResponse("unauthorized");
-    }
+    // if(!isAuthorized(e))
+    // {
+    //     return buildErrorResponse("unauthorized");
+    // }
 
     var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     var worksheet = spreadsheet.getSheetByName("ZNS");
     var rows = worksheet.getDataRange().getValues();
 
+    var headings = rows[0];
+    var entries = rows.slice(1);
+    var entriesWithHeadings = addHeadings(entries, headings);
+    var incompleteEntries = removeCompleted(entriesWithHeadings);
+    Logger.log(incompleteEntries);
+
     return buildSuccessResponse("authorized");
+}
+
+function addHeadings(entries, headings)
+{
+    return entries.map(function(entryAsArray) {
+        var entryAsObj = {};
+        headings.forEach(function(heading, i) {
+            entryAsObj[heading] = entryAsArray[i];
+        });
+        return entryAsObj;
+    });
+}
+
+function removeCompleted(entries, completed)
+{
+    return entries.filter(function(entry) {
+        return entry["isComplete"] != true && entry["isComplete"] != "";
+    });
 }
 
 function isAuthorized(e)

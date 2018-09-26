@@ -1,4 +1,4 @@
-// GET https://apiurl?key=zns-test&request=review&user=zuk
+// GET https://apiurl?key=zns-test
 
 var API_KEY = "zns-test";
 var TASK_SPREADSHEET_ID = "1FFNOBq7LXesjj_hnnQAp6JtmnX6NIVpZcU1kkQ13AzA";
@@ -6,19 +6,35 @@ var MEGASHEET_ID = "1sGBfKDG61EQmIzW11Wfm51kzMcdH8F1HluENkfrFNBI";
 
 function doGet(e)
 {
-    // if(!isAuthorized(e))
-    // {
-    //     return buildErrorResponse("unauthorized");
-    // }
+    if(!isAuthorized(e))
+    {
+        return buildErrorResponse("unauthorized");
+    }
+    
+    //return something if no incomplete tasks
     task = getIncompleteTask();
-
+  
     //error handle if device not found
     deviceInfo = getOldDeviceInfo(task["task"]["device"] + task["task"]["newDeviceID"]);
-
+  
     edits = suggestedEdits(deviceInfo,task);
-    Logger.log(edits);
-
-    return buildSuccessResponse("authorized");
+    var response = {
+        task: {
+            member: task.task.volunteerName,
+            row: task.row,
+        },
+        current: {
+            row: deviceInfo.row,
+            id: deviceInfo.info.deviceID,
+            code: deviceInfo.info.Code,
+            user: deviceInfo.info.User,
+            notes: deviceInfo.info.Notes,
+            description: deviceInfo.info.Description,
+            value: deviceInfo.info.price,
+        },
+        updated: edits
+    };
+    return buildSuccessResponse(response);
 }
 
 function getIncompleteTask()
@@ -59,9 +75,9 @@ function getOldDeviceInfo(deviceNumber)
 function suggestedEdits(deviceInfo, taskInfo)
 {
     var newInfo = {};
-    if(taskInfo["task"]["status"] !== "")
+    if(parseInt(taskInfo["task"]["status"]) !== deviceInfo.info.Code)
     {
-        newInfo["Code"] = parseInt(taskInfo["task"]["status"]);
+        newInfo["code"] = parseInt(taskInfo["task"]["status"]);
     }
     
     if(taskInfo["task"]["notes"] !== "" || taskInfo["task"]["newNotes"] !== "")
@@ -72,7 +88,7 @@ function suggestedEdits(deviceInfo, taskInfo)
             ? deviceInfo["info"]["Notes"]
             : deviceInfo["info"]["Notes"] + "\n";
         newText += today + ", " + taskInfo["task"]["notes"] + taskInfo["task"]["newNotes"];
-        newInfo["Notes"] = newText;
+        newInfo["notes"] = newText;
     }
 
     if(taskInfo["task"]["description"] !== "")
@@ -80,12 +96,12 @@ function suggestedEdits(deviceInfo, taskInfo)
         var newText = deviceInfo["info"]["Description"] === "" 
             ? taskInfo["task"]["description"]
             : deviceInfo["info"]["Description"] + "\n" + taskInfo["task"]["description"];
-        newInfo["Description"] = newText;
+        newInfo["description"] = newText;
     }
 
     if(taskInfo["task"]["price"] !== "")
     {
-        newInfo["price"] = deviceInfo["info"]["price"];
+        newInfo["value"] = deviceInfo["info"]["price"];
     }
 
     return newInfo
@@ -114,13 +130,9 @@ function isAuthorized(e)
     return "key" in e.parameters && e.parameters["key"][0] == API_KEY;
 }
 
-function buildSuccessResponse(message)
+function buildSuccessResponse(data)
 {
-    var output = JSON.stringify({
-        status: "success",
-        message: message
-    });
-
+    var output = JSON.stringify(data);
     return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -134,9 +146,9 @@ function buildErrorResponse(message)
     return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JSON);
 }
 
-function getRequestParam(e)
-{
-    return "request" in e.parameters 
-        ? e.parameters["request"][0]
-        : "review";
-}
+// function getRequestParam(e)
+// {
+//     return "request" in e.parameters 
+//         ? e.parameters["request"][0]
+//         : "review";
+// }

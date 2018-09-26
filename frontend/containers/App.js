@@ -7,7 +7,7 @@ export default class App extends Component
     {
         return <div class="container">
             <h3 class="text-center mt-4">Task Submitted by Aryoman Patel</h3>
-            <Entry title="Updated" readOnly={true}/>
+            <Entry title="Current" readOnly={true}/>
             <Entry title="Updated" readOnly={false}/>
             <div class="mt-5">
                 <div class="text-center">

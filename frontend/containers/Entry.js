@@ -1,44 +1,77 @@
 import React, {Component} from 'react';
+import Input from "./Input.js";
 
 export default class Entry extends Component
 {
+    constructor(props)
+    {
+        super(props);
+        this.state = {
+            codeColor: this.colorClass(this.props.data.current.code, this.props.data.updated.code),
+            notesColor: this.colorClass(this.props.data.current.notes, this.props.data.updated.notes),
+            descriptionColor: this.colorClass(this.props.data.current.description, this.props.data.updated.description),
+            valueColor: this.colorClass(this.props.data.current.value, this.props.data.updated.value),
+        };
+    }
+
+    colorClass(current, updated)
+    {
+        if(current + "" === updated + "" || this.props.readOnly) return "";
+        return "text-primary";
+    }
+
+    changeColor(name, current, updated)
+    {
+        var newState = {};
+        newState[name + "Color"] = this.colorClass(current, updated);
+        this.setState(newState);
+    }
+
     render() 
     {
-        let editStyle = this.props.readOnly ? {} : {
-            borderStyle: "dotted",
-            padding: "0.375rem",
-            outline: "none",
-        };
         let nonEditStyle = this.props.readOnly ? {} : {
             borderTopStyle: "solid",
             borderColor: "transparent",
             paddingTop: "0.375rem",
         };
 
-        return <div class="row mt-4">
+        const fields = ["code", "notes", "description", "value"];
+        let inputs = {};
+        for(let i = 0; i < fields.length; i++)
+        {
+            let updated = this.props.readOnly ? this.props.data.current[fields[i]] : this.props.data.updated[fields[i]];
+            inputs[fields[i]] = <Input 
+                name={fields[i]}
+                readOnly={this.props.readOnly}
+                current={this.props.data.current[fields[i]]}
+                updated={updated}
+                changeColor={this.changeColor.bind(this)}
+                color={this.state[fields[i] + "Color"]}
+            />;
+        }
+
+        return <div className="row mt-4">
                 <h4>{this.props.title} Entry:</h4>
-                <table class="table">
+                <table className="table">
                     <tr>
                         <th>Device ID</th>
-                        <th>Code</th>
+                        <th className={this.state.codeColor}>Code</th>
                         <th>User</th>
-                        <th class="text-primary">Notes</th>
-                        <th>Description</th>
-                        <th>Value</th>
+                        <th className={this.state.notesColor}>Notes</th>
+                        <th className={this.state.descriptionColor}>Description</th>
+                        <th className={this.state.valueColor}>Value</th>
                     </tr>
                     <tr>
-                        {/* <td><div style={{paddingTop: "0.375rem"}}>3118009W</div></td>
-                        <td><input type="text" readOnly={this.props.readOnly} class="form-control text-center" maxlength="1" size="1" value="5"/></td>
-                        <td><div style={{paddingTop: "0.375rem"}}>{"RESERVED\nT32"}</div></td>
-                        <td><textarea readOnly={this.props.readOnly} class="form-control text-primary" rows="3">{"9/24/18: Its good."}</textarea></td>
-                        <td><textarea readOnly={this.props.readOnly} class="form-control text-center" rows="3">hp Pavilion dm3</textarea></td>
-                        <td><input readOnly={this.props.readOnly} type="text" class="form-control text-center" value="$500" size="6"/></td> */}
-                        <td><div style={nonEditStyle}>3118009W</div></td>
-                        <td><div contentEditable={!this.props.readOnly} style={editStyle}>5</div></td>
-                        <td><div style={nonEditStyle}>{"RESERVED\nT32"}</div></td>
-                        <td class="text-primary"><div contentEditable={!this.props.readOnly} style={editStyle}>{"9/24/18: Its good."}</div></td>
-                        <td><div contentEditable={!this.props.readOnly} style={editStyle}>{"hp Pavilion dm3"}</div></td>
-                        <td><div contentEditable={!this.props.readOnly} style={editStyle}>{"$500"}</div></td>
+                        <td>
+                            <div style={nonEditStyle}>{this.props.data.current.id}</div>
+                        </td>
+                        <td>{inputs.code}</td>
+                        <td>
+                            <div style={nonEditStyle}>{this.props.data.current.user}</div>
+                        </td>
+                        <td>{inputs.notes}</td>
+                        <td>{inputs.description}</td>
+                        <td>{inputs.value}</td>
                     </tr>
                 </table>
         </div>;

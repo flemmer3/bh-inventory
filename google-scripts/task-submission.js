@@ -79,6 +79,10 @@ function suggestedEdits(deviceInfo, taskInfo)
     {
         newInfo["code"] = parseInt(taskInfo["task"]["status"]);
     }
+    else
+    {
+        newInfo["code"] = deviceInfo.info.Code;
+    }
     
     if(taskInfo["task"]["notes"] !== "" || taskInfo["task"]["newNotes"] !== "")
     {
@@ -90,6 +94,10 @@ function suggestedEdits(deviceInfo, taskInfo)
         newText += today + ", " + taskInfo["task"]["notes"] + taskInfo["task"]["newNotes"];
         newInfo["notes"] = newText;
     }
+    else
+    {
+        newInfo["notes"] = deviceInfo.info.Notes;
+    }
 
     if(taskInfo["task"]["description"] !== "")
     {
@@ -98,10 +106,18 @@ function suggestedEdits(deviceInfo, taskInfo)
             : deviceInfo["info"]["Description"] + "\n" + taskInfo["task"]["description"];
         newInfo["description"] = newText;
     }
+    else
+    {
+        newInfo["description"] = deviceInfo.info.Description;
+    }
 
     if(taskInfo["task"]["price"] !== "")
     {
-        newInfo["value"] = deviceInfo["info"]["price"];
+        newInfo["value"] = taskInfo["task"]["price"];
+    }
+    else
+    {
+        newInfo["value"] = deviceInfo.info.price;
     }
 
     return newInfo

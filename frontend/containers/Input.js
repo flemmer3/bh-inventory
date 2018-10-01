@@ -24,19 +24,17 @@ export default class Input extends Component
                 this.state.valueCurrent, 
                 editorState.getCurrentContent().getPlainText(),
                 this.props.validation,
+                this.props.error,
             );
         };
     }
 
     render() 
     {
-        let editStyle = this.props.readOnly ? {} : {
-            borderStyle: "dotted",
-            padding: "0.375rem",
-            outline: "none",
-        };
+        let editStyle = this.props.readOnly ? {} : {padding: "0.375rem"};
+        let borderClass = this.props.readOnly ? "" : this.props.color.replace("text", "border") + " border rounded ";
 
-        return <div className={this.props.color} style={editStyle}>
+        return <div className={borderClass + this.props.color} style={editStyle}>
             <Editor readOnly={this.props.readOnly} editorState={this.state.value} onChange={this.valueEdit}/>
         </div>;
     }

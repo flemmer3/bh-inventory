@@ -21,11 +21,15 @@ export default class Entry extends Component
         return "text-primary";
     }
 
-    changeColor(name, current, updated, validation=null)
+    changeColor(name, current, updated, validation=null, message=null)
     {
         var newState = {};
-        newState[name + "Color"] = this.colorClass(current, updated, validation);
+        let newColor = this.colorClass(current, updated, validation)
+        newState[name + "Color"] = newColor;
         this.setState(newState);
+
+        let error = newColor === "text-danger" ? message : null;
+        this.props.updateEdits(name, updated, error);
     }
 
     render() 
@@ -37,10 +41,22 @@ export default class Entry extends Component
         };
 
         const fields = {
-            code: /^(-?[1-4]{1})$|^[50]{1}$/, // is a valid status code
-            notes: null, 
-            description: null, 
-            value: /^([0-9]+(\.[0-9]+)?)?$/, // is a number
+            code: {
+                validation: /^(-?[1-4]{1})$|^[50]{1}$/, // is a valid status code
+                message: "Code must be a valid status code.",
+            },
+            notes: {
+                validation: null,
+                message: "",
+            },
+            description: {
+                validation: null,
+                message: "",
+            },
+            value: {
+                validation: /^([0-9]+(\.[0-9]+)?)?$/, // is a number
+                message: "Value must be a positive number.",
+            },
         };
         let inputs = {};
         for(let field in fields)
@@ -53,7 +69,8 @@ export default class Entry extends Component
                 updated={updated}
                 changeColor={this.changeColor.bind(this)}
                 color={this.state[field + "Color"]}
-                validation={fields[field]}
+                validation={fields[field].validation}
+                error={fields[field].message}
             />;
         }
 

@@ -55,12 +55,29 @@ export default class App extends Component
         this.setState(newState);
     }
 
+    displayError(message)
+    {
+        alert(message);
+    }
+
     approveEdits()
     {
-        console.log(this.state.code);
-        console.log(this.state.notes);
-        console.log(this.state.description);
-        console.log(this.state.value);
+        const editedFields = ["code", "notes", "description", "value"];
+        let postData = {
+            action: "approve",
+            taskRow: this.state.task.task.row,
+            deviceRow: this.state.task.current.row,
+        };
+        for(let i = 0; i < editedFields.length; i++)
+        {
+            if(this.state[editedFields[i]].error !== null)
+            {
+                this.displayError(this.state[editedFields[i]].error);
+                return false;    
+            }
+            postData[editedFields[i]] = this.state[editedFields[i]].value;
+        }
+        console.log(postData);
     }
 
     /*

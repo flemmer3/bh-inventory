@@ -14,16 +14,17 @@ export default class Entry extends Component
         };
     }
 
-    colorClass(current, updated)
+    colorClass(current, updated, validation=null)
     {
+        if(validation !== null && !validation.test(updated + "")) return "text-danger";
         if(current + "" === updated + "" || this.props.readOnly) return "";
         return "text-primary";
     }
 
-    changeColor(name, current, updated)
+    changeColor(name, current, updated, validation=null)
     {
         var newState = {};
-        newState[name + "Color"] = this.colorClass(current, updated);
+        newState[name + "Color"] = this.colorClass(current, updated, validation);
         this.setState(newState);
     }
 
@@ -35,18 +36,24 @@ export default class Entry extends Component
             paddingTop: "0.375rem",
         };
 
-        const fields = ["code", "notes", "description", "value"];
+        const fields = {
+            code: /^(-?[1-4]{1})$|^[50]{1}$/, // is a valid status code
+            notes: null, 
+            description: null, 
+            value: /^([0-9]+(\.[0-9]+)?)?$/, // is a number
+        };
         let inputs = {};
-        for(let i = 0; i < fields.length; i++)
+        for(let field in fields)
         {
-            let updated = this.props.readOnly ? this.props.data.current[fields[i]] : this.props.data.updated[fields[i]];
-            inputs[fields[i]] = <Input 
-                name={fields[i]}
+            let updated = this.props.readOnly ? this.props.data.current[field] : this.props.data.updated[field];
+            inputs[field] = <Input 
+                name={field}
                 readOnly={this.props.readOnly}
-                current={this.props.data.current[fields[i]]}
+                current={this.props.data.current[field]}
                 updated={updated}
                 changeColor={this.changeColor.bind(this)}
-                color={this.state[fields[i] + "Color"]}
+                color={this.state[field + "Color"]}
+                validation={fields[field]}
             />;
         }
 

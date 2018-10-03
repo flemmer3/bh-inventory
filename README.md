@@ -3,7 +3,7 @@ The goal of this project is to rapidly improve BinaryHeart's inventory system. O
 
 The incremental phases through which the system will be completed are enumerated as follows:
 
-- [ ] Phase 1: Automated Tasks (in progress)
+- [x] Phase 1: Automated Tasks
 - [ ] Phase 2: Integrated Tasks
 - [ ] Phase 3: Integrated Inventory
 - [ ] Phase 4: Chapter Generalization

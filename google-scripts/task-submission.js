@@ -10,11 +10,16 @@ function doGet(e)
     {
         return buildErrorResponse("unauthorized");
     }
-    
-    //return something if no incomplete tasks
+
+    //TODO: return something if no incomplete tasks
     task = getIncompleteTask();
+
+    if(task === null)
+    {
+        return buildErrorResponse("no new tasks");
+    }
   
-    //error handle if device not found
+    //TODO: error handle if device not found
     deviceInfo = getOldDeviceInfo(task["task"]["device"] + task["task"]["newDeviceID"]);
   
     edits = suggestedEdits(deviceInfo,task);
@@ -37,6 +42,47 @@ function doGet(e)
     return buildSuccessResponse(response);
 }
 
+function doPost(e)
+{
+    if(!isAuthorized(e))
+    {
+        return buildErrorResponse("unauthorized");
+    }
+
+    if(String(e.parameter.accepted).toLowerCase() === "true")
+    {
+        updateMainSheet(e.parameter);
+    }
+    updateTaskSheet(e.parameter);
+
+    return buildSuccessResponse("updated spreadsheet");
+}
+
+function updateMainSheet(parameter)
+{
+    var spreadsheet = SpreadsheetApp.openById(MEGASHEET_ID);
+    var worksheet = spreadsheet.getSheetByName("Inventory");
+    
+    //TODO: validate user entries before entering
+    if(parameter.deviceID === worksheet.getRange(parameter.deviceRow, 2).getValue()) // verify that id is the same
+    {
+        var columnKey = {code: 3, notes: 6, description: 7, value: 17};
+        Object.keys(columnKey).forEach(function(key) { // update each entry in columnnKey
+            worksheet.getRange(parameter.deviceRow, columnKey[key]).setValue(parameter[key]);
+        });
+    }
+}
+
+function updateTaskSheet(parameter)
+{
+    var spreadsheet = SpreadsheetApp.openById(TASK_SPREADSHEET_ID);
+    var worksheet = spreadsheet.getSheetByName("ZNS");
+
+    var status = String(parameter.accepted).toLowerCase() === "true" ? "TRUE" : "DENY";
+    Logger.log(status);
+    worksheet.getRange(parameter.taskRow, 1).setValue(status);
+}
+
 function getIncompleteTask()
 {
     var spreadsheet = SpreadsheetApp.openById(TASK_SPREADSHEET_ID);
@@ -48,11 +94,12 @@ function getIncompleteTask()
     var entriesWithHeadings = addHeadings(entries, headings);
     for(var i = 0; i < entriesWithHeadings.length; i++)
     {
-        if(entriesWithHeadings[i]["isComplete"] !== true)
+        if(entriesWithHeadings[i]["isComplete"] === false || entriesWithHeadings[i]["isComplete"] === "FALSE")
         {
             return {"task": entriesWithHeadings[i], "row": i+2};
         }
     }
+    return null;
 }
 
 function getOldDeviceInfo(deviceNumber)
@@ -91,7 +138,7 @@ function suggestedEdits(deviceInfo, taskInfo)
         var newText = deviceInfo["info"]["Notes"] === "" 
             ? deviceInfo["info"]["Notes"]
             : deviceInfo["info"]["Notes"] + "\n";
-        newText += today + ", " + taskInfo["task"]["notes"] + taskInfo["task"]["newNotes"];
+        newText += today + ": " + taskInfo["task"]["notes"] + taskInfo["task"]["newNotes"];
         newInfo["notes"] = newText;
     }
     else

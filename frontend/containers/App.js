@@ -12,7 +12,7 @@ export default class App extends Component
         super(props);
         this.state = {
             task: null,
-            status: "Retrieving the next task... Hello World!!!!",
+            status: "Retrieving the next task",
             code: "",
             notes: "",
             description: "",

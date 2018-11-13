@@ -1,0 +1,29 @@
+{
+  "name": "bh-backend",
+  "version": "1.0.0",
+  "description": "A backend for the BinaryHeart inventory system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marzukr/bh-inventory.git"
+  },
+  "keywords": [
+    "BinaryHeart",
+    "awesome"
+  ],
+  "author": "Marzuk Rashid",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marzukr/bh-inventory/issues"
+  },
+  "homepage": "https://github.com/marzukr/bh-inventory#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.3.12",
+    "morgan": "^1.9.1"
+  }
+}

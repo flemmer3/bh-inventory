@@ -1,0 +1,7 @@
+{
+    "dbUser": "user",
+    "dbPassword": "password",
+    "dbURL": "database.com",
+    "dbPort": "0",
+    "dbName": "database"
+}

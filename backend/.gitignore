@@ -1,1 +1,5 @@
+# Confidential server information
 config.json
+
+# NPM packages folder.
+node_modules/

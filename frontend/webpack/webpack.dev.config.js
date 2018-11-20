@@ -55,6 +55,11 @@ module.exports = {
     },
     devServer: {
         contentBase: parentDir,
-        historyApiFallback: true
+        historyApiFallback: true,
+        proxy: {
+            "/": {
+                target: "http://localhost:3001"
+            }
+        }
     }
 }

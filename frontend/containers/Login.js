@@ -25,7 +25,7 @@ export default class Login extends Component
         event.preventDefault();
         console.log('Login request');
         axios.post("/login", {
-            username: this.state.username,
+            email: this.state.email,
             password: this.state.password
         }).then(response => {
             console.log('login response: ');
@@ -44,9 +44,9 @@ export default class Login extends Component
         return <div>
             <form onSubmit={this.handleSubmit}>
                 Email:<br/>
-                <input name="email" type="email"/><br/>
+                <input name="email" type="email" onChange={this.handleChange}/><br/>
                 Password:<br/>
-                <input name="password" type="password"/><br/>
+                <input name="password" type="password" onChange={this.handleChange}/><br/>
                 <input type="submit"/>
             </form>
         </div>;

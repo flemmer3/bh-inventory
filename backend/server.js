@@ -2,7 +2,13 @@ const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
-// const Data = require("./data");
+const session = require('express-session');
+const passport = require('./passport');
+
+//config
+const CONFIG = require("./config.json");
+// routes
+const user = require('./routes/user');
 
 const API_PORT = 3001;
 const app = express();
@@ -29,5 +35,26 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
+
+//sessions
+app.use(
+    session({
+        secret: CONFIG.secret,
+        resave: false,
+        saveUninitialized: false
+    })
+);
+
+app.use((req, res, next) => {
+    console.log('req.session', req.session);
+    return next();
+});
+
+//routes
+app.use("/user", user);
+
+//passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));

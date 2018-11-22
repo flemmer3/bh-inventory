@@ -24,14 +24,14 @@ export default class Login extends Component
     handleSubmit(event) {
         event.preventDefault();
         console.log('Login request');
-        axios.post("/login", {
+        axios.post("/user/login", {
             email: this.state.email,
             password: this.state.password
         }).then(response => {
             console.log('login response: ');
             console.log(response);
             if (response.status === 200) {
-                // success
+                console.log(response.data);
             }
         }).catch(error => {
             console.log('login error: ');

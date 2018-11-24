@@ -21,7 +21,7 @@ class App extends Component {
           >
             Learn React
           </a>
-          <button onClick={this.simpleAction}>Test Redux Action</button>
+          <button className="button" onClick={this.simpleAction}>Test Redux Action</button>
           <pre>{JSON.stringify(this.props)}</pre>
         </header>
       </div>
